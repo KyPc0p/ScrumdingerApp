@@ -21,6 +21,9 @@ struct ScrumsView: View {
                     CardView(scrum: scrum)
                 }
                 .listRowBackground(scrum.theme.mainColor)
+                }
+            .onDelete { indices in
+                scrums.remove(atOffsets: indices)
             }
         }
         .navigationTitle("Daily Scrum")
