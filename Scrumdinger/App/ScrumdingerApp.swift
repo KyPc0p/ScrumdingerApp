@@ -10,30 +10,37 @@ import SwiftUI
 @main
 struct ScrumdingerApp: App {
     @StateObject private var store = ScrumStore()
+    @State private var errorWrapper: ErrorWrapper?
     
     var body: some Scene {
         WindowGroup {
             NavigationView {
                 ScrumsView(scrums: $store.scrums) {
-                    ScrumStore.save(scrums: store.scrums) { result in
-                        print("ScrumStore.save IN ScrumdingerApp")
-                        if case .failure(let error) = result {
-                            fatalError(error.localizedDescription)
+                    Task {
+                        do {
+                            try await ScrumStore.save(scrums: store.scrums)
+                        } catch {
+                            errorWrapper = ErrorWrapper(error: error, guidance: "Try again later.")
                         }
                     }
                 }
             }
-            .onAppear {
-                ScrumStore.load { result in
-                    print("ScrumStore.load IN ScrumdingerApp")
-                    switch result {
-                    case.success(let scrums):
-                        store.scrums = scrums
-                    case .failure(let error):
-                        fatalError(error.localizedDescription)
-                    }
+            .task {
+                do {
+                    store.scrums = try await ScrumStore.load()
+                } catch {
+                    errorWrapper = ErrorWrapper(
+                        error: error,
+                        guidance: "Scrumdinger will load sample data and continue."
+                    )
                 }
             }
+            .sheet(item: $errorWrapper, onDismiss: {
+                store.scrums = DailyScrum.sampleData
+            }) { wrapper in
+                ErrorView(errorWrapper: wrapper)
+            }
+
         }
     }
 }

@@ -52,7 +52,6 @@ struct ScrumsView: View {
             }
         }
         .onChange(of: scenePhase) { phase in
-            print("\(phase) in")
             if phase == .inactive { saveAction() }
         }
     }
