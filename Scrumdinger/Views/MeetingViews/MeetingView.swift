@@ -13,7 +13,7 @@ struct MeetingView: View {
     @StateObject var scrumTimer = ScrumTimer()
     @StateObject var speechRecognizer = SpeechRecognizer()
     @State private var isRecording = false
-//    private var player: AVPlayer { AVPlayer.sharedDingPlayer }
+    private var player: AVPlayer { AVPlayer.sharedDingPlayer }
     
     var body: some View {
         ZStack {
@@ -36,6 +36,10 @@ struct MeetingView: View {
             speechRecognizer.reset()
             speechRecognizer.transcribe()
             isRecording = true
+            scrumTimer.speakerChangedAction = {
+                player.seek(to: .zero)
+                player.play()
+            }
             scrumTimer.startScrum()
         }
         .onDisappear {

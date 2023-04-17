@@ -69,7 +69,7 @@ extension DailyScrum {
             title: "Design",
             attendees: ["Cathy", "Daisy", "Simon", "Jonathan"],
             lengthInMinutes: 10,
-            theme: .yellow
+            theme: .bubblegum
         ),
         DailyScrum(
             title: "App dev",
